@@ -16,7 +16,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  await FirebaseAuth.instance.useAuthEmulator('127.0.0.1', 9099);
   runApp(const MyApp());
 
   FirebaseAuth.instance
@@ -25,7 +25,7 @@ Future<void> main() async {
     if (user == null) {
       print('User is currently signed out!1');
     } else {
-      print('User is signed in!');
+      print('User is signed in1!');
     }
   });
 
@@ -35,7 +35,7 @@ Future<void> main() async {
     if (user == null) {
       print('User is currently signed out!2');
     } else {
-      print('User is signed in!');
+      print('User is signed in2!');
     }
   });
 
@@ -122,16 +122,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]).signIn();
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
+
+
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
